@@ -27,6 +27,11 @@ class SubmarineWrapper:
         self.submarine = submarine
 
     def move(self, command_string):
+        """
+        wraps the details for the submarine moves.
+        :param command_string: typ. forward INT, as a line of the puzzle input
+        :return:
+        """
         infos = command_string.split(" ")
         command = infos[0]
         dist = int(infos[1])
@@ -36,3 +41,5 @@ class SubmarineWrapper:
             self.submarine.up(dist)
         elif command == "down":
             self.submarine.down(dist)
+        else:
+            raise ValueError("command not understood: {}".format(command))
