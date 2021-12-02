@@ -1,5 +1,5 @@
+from aoc_2021.source.Submarine import Submarine, SubmarineWrapper
 from aoc_utils.source import *
-
 
 def day1():
     print("2021 - Day 1")
@@ -17,3 +17,15 @@ def day1():
             count_increase += 1
         d0 = d
     return count_increase
+
+def day2():
+    print("2021 - Day 2")
+    sub = Submarine()
+    subwrap = SubmarineWrapper(sub)
+    with open(r"aoc_2021/inputs/day2.txt", 'r') as file_input:
+        lines = file_input.readlines()
+
+    for l in lines:
+        subwrap.move(l)
+    print(subwrap.submarine)
+    return subwrap.submarine

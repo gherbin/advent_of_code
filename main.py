@@ -1,8 +1,8 @@
-from aoc_2021.source.source import day1
+from aoc_2021.source.source import *
 
 
 def main():
-    print(day1())
+    print(day2())
 
 if __name__ == "__main__":
     main()
