@@ -26,3 +26,7 @@ def sum_n_first(numbers, n):
     for i in range(n):
         sum += numbers[i]
     return sum
+
+
+def bin2int(binary):
+    return sum(val*(2**idx) for idx, val in enumerate(reversed(binary)))

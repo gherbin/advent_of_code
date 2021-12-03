@@ -29,3 +29,13 @@ def day2():
     for l in lines:
         subwrap.move(l)
     return subwrap.submarine
+
+def day3():
+    print("2021 - Day 3")
+    sub = Submarine()
+    # subwrap = SubmarineWrapper(sub)
+    with open(r"aoc_2021/inputs/day3.txt", 'r') as file_input:
+        lines = file_input.readlines()
+    sub.compute_rates(lines)
+    print(sub)
+
