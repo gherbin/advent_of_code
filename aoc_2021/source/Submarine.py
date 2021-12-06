@@ -1,6 +1,3 @@
-import copy
-
-import numpy as np
 from aoc_utils.source import *
 
 
