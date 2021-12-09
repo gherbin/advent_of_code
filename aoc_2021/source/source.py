@@ -1,8 +1,121 @@
 from aoc_2021.source.Bingo import Bingo
-from aoc_2021.source.LanternFish import Fishes, get_fishes, FastFish
+from aoc_2021.source.Display import Display
+from aoc_2021.source.LanternFish import FastFish
 from aoc_2021.source.Submarine import Submarine, SubmarineWrapper
 from aoc_2021.source.VentLines import build_vents_map
 from aoc_utils.source import *
+
+
+def day9():
+    print("2021 - Day 9")
+    with open(r"aoc_2021/inputs/day9.txt", 'r') as file_input:
+        lines = file_input.readlines()
+    lines = np.array([np.array([int(d) for d in line.strip()]) for line in lines])
+
+    # part 1
+    is_low = np.zeros_like(lines)
+
+    for x_ in np.arange(0, lines.shape[0]):
+        for y_ in np.arange(0, lines.shape[1]):
+            is_low[x_, y_] = is_low_point(lines, x_, y_)
+    is_low = np.array(is_low, dtype=bool)
+    X_masked = np.ma.masked_array(lines, ~is_low)
+
+    print("risk level = ", np.sum(X_masked) + X_masked.count())
+
+    # part 2
+    # from all the low points, count the number of elements in all directions until a "9" is reached
+    lows = np.where(is_low)  # lows is a tuple of ([xs], [ys]) of the low points
+    cs = []
+    for x_, y_ in zip(lows[0], lows[1]):
+        print(x_, y_)
+        c = count_around((x_, y_), lines)
+        cs += [c]
+
+    cs = list(np.sort(cs))
+    cs.reverse()
+    score = cs[0] * cs[1] * cs[2]
+    return score
+
+
+def day8():
+    print("2021 - Day 8")
+    with open(r"aoc_2021/inputs/day8.txt", 'r') as file_input:
+        lines = file_input.readlines()
+    lines = [line.strip().split("|") for line in lines]
+    d = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+    # digit 1 --> 2 segments
+    # digit 4 --> 4 segments
+    # digit 7 --> 3 segments
+    # digit 8 --> 7 segments
+
+    # part 1
+    samples = [l[1].split(" ") for l in lines]
+    for digits in samples:
+        for digit in digits:
+            d[len(digit)] += 1
+
+    print(d[2] + d[4] + d[3] + d[7])
+
+    # part 2
+    #  --x0--
+    # x3    x1
+    #  --x2--
+    # x6    x4
+    #  --x5--
+
+    # print("line = {}".format(line))
+    #
+    decoded_digits = []
+    for line in lines:
+        display = Display()
+
+        decoded_digit = []
+        source = line[0].strip().split(" ")
+        for code in source:
+            display.process_code(code)
+        for code in line[1].strip().split(" "):
+            dig = display.decode(code)
+            decoded_digit += [dig]
+        decoded_digits += [1000 * decoded_digit[0] + 100 * decoded_digit[1] + 10 * decoded_digit[2] + decoded_digit[3]]
+
+    return np.sum(np.array(decoded_digits))
+
+
+def day7():
+    print("2021 - Day 7")
+    with open(r"aoc_2021/inputs/day7.txt", 'r') as file_input:
+        lines = file_input.readlines()
+    line = np.array([int(d) for d in lines[0].split(",")])
+
+    horiz_min = np.min(line)
+    horiz_max = np.max(line)
+    possibilities = np.arange(horiz_min, horiz_max)
+    sum_signs = 9999999
+    best_candidate = horiz_min
+    for p in possibilities:
+        tmp = np.sum(np.sign(line - p))
+        if sum_signs > np.abs(tmp):
+            sum_signs = np.abs(tmp)
+            best_candidate = p
+
+    def compute_fuel(inputs, target):
+        return np.sum(np.abs(inputs - target))
+
+    fuel = compute_fuel(line, best_candidate)
+
+    # part 2
+    def compute_one_fuel_part2(input, target):
+        return np.max(np.cumsum(np.arange(np.abs(input - target) + 1)))
+
+    def compute_fuel_part2(inputs, target):
+        return np.sum([compute_one_fuel_part2(inp, target) for inp in inputs])
+
+    best_candidate = int(1 / len(line) * np.sum(line))
+    fuel = compute_fuel_part2(line, best_candidate)
+
+    return fuel
 
 
 def day1():
@@ -33,6 +146,7 @@ def day2():
         subwrap.move(l)
     return subwrap.submarine
 
+
 def day3():
     print("2021 - Day 3")
     sub = Submarine()
@@ -41,8 +155,8 @@ def day3():
     sub.compute_rates(lines)
     print(sub)
 
-def day4():
 
+def day4():
     print("2021 - Day 4")
     score = None
     with open(r"aoc_2021/inputs/day4.txt", 'r') as file_input:
@@ -75,9 +189,10 @@ def day4():
         print(np.argmax(bingo.runs))
 
         score = bingo.compute_score(np.argmax(bingo.runs))
-        print(bingo.boards[np.argmax(bingo.runs),:,:])
-        print(bingo.boards_binary[np.argmax(bingo.runs),:,:])
+        print(bingo.boards[np.argmax(bingo.runs), :, :])
+        print(bingo.boards_binary[np.argmax(bingo.runs), :, :])
         return score
+
     # score = _part1()
     score = _part2()
     # print(bingo.bingo)
@@ -92,7 +207,7 @@ def day5():
         lines = file_input.readlines()
     sources, targets = get_lines_from_input(lines)
     map = build_vents_map(sources, targets)
-    overlapping_points = np.where(map>1)
+    overlapping_points = np.where(map > 1)
 
     return len(overlapping_points[0])
 
